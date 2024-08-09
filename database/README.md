@@ -148,6 +148,8 @@ For most purposes a time trigger is sufficient (running once a day to cleanup yo
 
 Using this, my 1400 entities (after excludes) with a 30 day history causes my database to fluctuate between ~550MB immediately after a cleanup and ~650MB immediately before a cleanup.
 
+**NOTE**: Purging your database more frequently and repacking your database causes extra disk writes and reduces the lifespan of your drive - by how much will vary significantly depending on your circumstances. In my opinion though, this is more than offset by the benefits gained from having a reasonable database size (for example, more reliable backups, faster response times due to less junk data). Purely anecdotally, (now that I have my database size under control) after 1.5 years my SSD is reporting 2% of its lifespan used - realistically, some other component is going to fail before my SSD ever does.
+
 # Other Suggestions
 
 If you absolutely must have a very large database for whatever reason, I would suggest that you:
