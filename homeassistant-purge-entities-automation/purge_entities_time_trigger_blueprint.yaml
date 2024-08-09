@@ -1,0 +1,61 @@
+blueprint:
+  name: Cleanup database (Time Trigger)
+  description: >-
+    Cleans up data by by purging entities which log too much data but which you
+    want to keep the long term statistics of, then (optionally) optimises the database.
+    Use recorder excludes for entities which you don't care about.
+  domain: automation
+  input:
+    trigger_time:
+      name: Trigger Time
+      description: The time when you want this automation to run (default 3:22AM).
+      selector: 
+        time:
+      default: "03:22:00"
+    purge_entities:
+      name: Purge Entities
+      description: The entities which you want to purge.
+      selector:
+        entity:
+          multiple: true
+    days_to_keep:
+      name: Days to Keep
+      description: >-
+        How many days of data to keep (default 1) - you may keep more if you really 
+        want more fine data but this will increase your database size.
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: day(s)
+          mode: slider
+    repack_enable:
+      name: Enable Repack
+      description: >-
+        Enable repacking of the database (this will optimise and hopefully shrink your database size).
+        This step is optional and depending on database size may cause a significant performance impact
+        as the database is rewritten. Disable this to reduce disk hits. Enabled by default.
+      selector:
+        boolean:
+      default: true
+
+mode: single
+
+trigger:
+  - platform: time
+    at: !input trigger_time
+
+action:
+  - alias: Purge Spacehogging Entities
+    service: recorder.purge_entities
+    target:
+      entity_id: !input purge_entities
+    data:
+      keep_days: !input days_to_keep
+
+  - alias: Repack DB
+    service: recorder.purge
+    data:
+      repack: true
+      apply_filter: true
+    enabled: !input repack_enable
